@@ -14,7 +14,7 @@ namespace DiscordBot.Modules
         {
             string currServer = (context.Channel as SocketGuildChannel).Guild.ToString();
             string serverFiles = AppDomain.CurrentDomain.BaseDirectory;
-            string jsonServerFile = Path.Combine(serverFiles, "DiscordGuilds", "PBot Testumgebung" + ".json");
+            string jsonServerFile = Path.Combine(serverFiles, "DiscordGuilds", currServer + ".json");
             string jsonText = File.ReadAllText(jsonServerFile);
 
             ServerData serverData = JsonConvert.DeserializeObject<ServerData>(jsonText);
