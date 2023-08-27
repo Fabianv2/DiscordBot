@@ -8,7 +8,8 @@ namespace DiscordBot.AccountManager
 {
     public class UserData
     {
-        public int UserID { get; set; }
+        public int Level { get; set; }
+        public double EXP { get; set; }
         public string Username { get; set; }
         public double Konto { get; set; }
     }

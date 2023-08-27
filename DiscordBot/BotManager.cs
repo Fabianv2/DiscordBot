@@ -17,16 +17,15 @@ namespace DiscordBot
 {
     public class BotManager
     {
+        LevelModule _levelModule = new LevelModule();
+
         public static DiscordSocketClient BotClient;
         public static CommandService Commands;
         public static IServiceProvider Services;
         public const string PREFIX = "#";
 
-
         public async Task RunBot()
         {
-
-
             var config = new DiscordSocketConfig()
             { GatewayIntents = GatewayIntents.All };
 
@@ -63,6 +62,7 @@ namespace DiscordBot
                 .AddSingleton<WeatherModule>()
                 .AddSingleton<HelpModule>()
                 .AddSingleton<BankingModule>()
+                .AddSingleton<LevelModule>()
                 .BuildServiceProvider();
         }
 
@@ -91,7 +91,6 @@ namespace DiscordBot
                 var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
                 Console.WriteLine(json);
             }
-
         }
 
         public async Task Nachricht(SocketMessage arg)
@@ -107,12 +106,24 @@ namespace DiscordBot
                     Console.WriteLine(result.ErrorReason + ": " + message);
                 }
             }
+
+            if (message.Author.IsBot)
+            {
+                return;
+            }
+            else
+            {
+                Console.WriteLine("-----------------------------------------------------------------------------");
+                Console.WriteLine($"({message.CreatedAt.ToLocalTime()}) \nServer: {(message.Channel as IGuildChannel)?.Guild?.Name ?? ""} \nUser: {message.Author.Username} \nMessage: {message.Content}");
+                Console.WriteLine("-----------------------------------------------------------------------------");
+
+                await _levelModule.AddExperience(message);
+            }
+
         }
 
         public async Task UpdateUser()
         {
-
-
             List<string> serverList = new List<string>();
             foreach (var foundServer in BotClient.Guilds)
             {
@@ -154,9 +165,7 @@ namespace DiscordBot
                                             "}";
                             sw.Write(jsonLayout);
                         }
-
                     }
-
 
                     if (toUpdateServer != null)
                     {
@@ -180,7 +189,6 @@ namespace DiscordBot
                                     serverData.Users.Add(newUser);
                                 }
                             }
-
                         }
 
                         string updatedJSON = JsonConvert.SerializeObject(serverData, Formatting.Indented);
@@ -192,13 +200,9 @@ namespace DiscordBot
                 }
                 catch (Exception e)
                 {
-
-                    Console.WriteLine("AHFOHEOFGHIAHBIGEFNBHNG" + e);
+                    Console.WriteLine(e);
                 }
-
             }
         }
-
-
     }
 }
