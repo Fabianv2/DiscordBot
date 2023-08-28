@@ -138,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountManager\ServerData.cs" />
+    <Compile Include="AccountManager\ServerDataManager.cs" />
     <Compile Include="AccountManager\UserData.cs" />
     <Compile Include="BotManager.cs" />
     <Compile Include="Modules\BankingModule.cs" />

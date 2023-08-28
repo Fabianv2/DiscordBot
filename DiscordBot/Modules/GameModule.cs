@@ -9,36 +9,36 @@ namespace DiscordBot
     public class GameModule : ModuleBase<SocketCommandContext>
     {
         BankingModule _bankingModule = new BankingModule();
-
         Random random = new Random();
 
         #region Schere Stein Papier
         [Command("SSP")]
-        [Alias("ssp", "SchereSteinPapier", "scheresteinpapier")]
+        [Alias("ssp")]
         public async Task SchereSteinPapier([Remainder] string playerSelection)
         {
             List<string> auswahlListe = new List<string>
             { "Schere","Stein","Papier" };
+            string _playerSelection = playerSelection.ToLower();
             string botSelection;
 
             int i = random.Next(0, 3);
-            botSelection = auswahlListe[i];
+            botSelection = auswahlListe[i].ToLower();
             try
             {
-                if (playerSelection == botSelection)
+                if (_playerSelection == botSelection)
                 {
                     await Context.Channel.SendMessageAsync($"{botSelection} \nUnentschieden! \n{Context.Message.Author.Mention}, versuche es nochmal!");
                 }
-                else if (playerSelection == "Schere" && botSelection == "Papier" ||
-                         playerSelection == "Stein" && botSelection == "Schere" ||
-                         playerSelection == "Papier" && botSelection == "Stein")
+                else if (_playerSelection == "schere" && botSelection == "papier" ||
+                         _playerSelection == "stein" && botSelection == "schere" ||
+                         _playerSelection == "papier" && botSelection == "stein")
                 {
                     _bankingModule.UpdateKonto(Context, 2);
                     await Context.Channel.SendMessageAsync($"{botSelection} \n{Context.Message.Author.Mention}, du hast gewonnen! (+2 :coin:) \nAktueller Kontostand: {_bankingModule.GetKontostand(Context)} :coin:");
                 }
-                else if (playerSelection == "Schere" && botSelection == "Stein" ||
-                         playerSelection == "Stein" && botSelection == "Papier" ||
-                         playerSelection == "Papier" && botSelection == "Schere")
+                else if (_playerSelection == "schere" && botSelection == "stein" ||
+                         _playerSelection == "stein" && botSelection == "papier" ||
+                         _playerSelection == "Papier" && botSelection == "schere")
                 {
                     _bankingModule.UpdateKonto(Context, -1);
                     await Context.Channel.SendMessageAsync($"{botSelection} \n{Context.Message.Author.Mention}, du hast verloren! (-1 :coin:) \nAktueller Kontostand: {_bankingModule.GetKontostand(Context)} :coin:");
@@ -70,12 +70,12 @@ namespace DiscordBot
                 if (playerGuess == botNumber)
                 {
                     _bankingModule.UpdateKonto(Context, 6);
-                    await Context.Channel.SendMessageAsync($"{botNumber} :game_die: \n{Context.Message.Author.Mention}, du hast die richtige Zahl erraten! (+8 :coin:) \nAktueller Kontostand: {_bankingModule.GetKontostand()} :coin:");
+                    await Context.Channel.SendMessageAsync($"{botNumber} :game_die: \n{Context.Message.Author.Mention}, du hast die richtige Zahl erraten! (+8 :coin:) \nAktueller Kontostand: {_bankingModule.GetKontostand(Context)} :coin:");
                 }
                 else
                 {
                     _bankingModule.UpdateKonto(Context, -1);
-                    await Context.Channel.SendMessageAsync($"{botNumber} :game_die: \n{Context.Message.Author.Mention}, du hast die Zahl leider nicht erraten! (-1 :coin:) \nAktueller Kontostand: {_bankingModule.GetKontostand()} :coin:");
+                    await Context.Channel.SendMessageAsync($"{botNumber} :game_die: \n{Context.Message.Author.Mention}, du hast die Zahl leider nicht erraten! (-1 :coin:) \nAktueller Kontostand: {_bankingModule.GetKontostand(Context)} :coin:");
                 }
             }
             catch (Exception e)
@@ -90,9 +90,5 @@ namespace DiscordBot
             Console.WriteLine("-----------------------------------------------------------------------------");
         }
         #endregion Errate Wuerfelnummer
-
-
-
-
     }
 }

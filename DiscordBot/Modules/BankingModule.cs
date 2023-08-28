@@ -10,6 +10,8 @@ namespace DiscordBot.Modules
 {
     public class BankingModule : ModuleBase<SocketCommandContext>
     {
+        ServerDataManager _serverDataManager = new ServerDataManager();
+
         #region Commands
         [Command("Kontostand")]
         [Alias("kontostand")]
@@ -25,13 +27,8 @@ namespace DiscordBot.Modules
             string username = userToDonateID.Username;
             string diskriminator = userToDonateID.Discriminator;
             string userToDonate = $"{username}#{diskriminator}";
-
-            string currServer = Context.Guild.ToString();
-            string serverFiles = AppDomain.CurrentDomain.BaseDirectory;
-            string jsonServerFile = Path.Combine(serverFiles, "DiscordGuilds", currServer + ".json");
-            string jsonText = File.ReadAllText(jsonServerFile);
-
-            ServerData serverData = JsonConvert.DeserializeObject<ServerData>(jsonText);
+            
+            ServerData serverData = _serverDataManager.LoadServerData((Context.Channel as SocketGuildChannel).Guild);
             var userToDonateKontoToUpdate = GetCorrectUser(userToDonate, username, diskriminator, serverData);
             var userDonaterKontoToUpdate = serverData.Users.Find(user => user.Username == Context.User.ToString());
 
@@ -47,8 +44,7 @@ namespace DiscordBot.Modules
                     userToDonateKontoToUpdate.Konto += Convert.ToDouble(amount);
                     userDonaterKontoToUpdate.Konto -= Convert.ToDouble(amount);
 
-                    string updatedJson = JsonConvert.SerializeObject(serverData, Formatting.Indented);
-                    File.WriteAllText(jsonServerFile, updatedJson);
+                    _serverDataManager.SaveServerData(Context.Guild.ToString(), serverData);
 
                     Console.WriteLine($"Das Konto von '{userToDonateKontoToUpdate}' wurde um {amount} erhöht. Neuer Kontostand: {userToDonateKontoToUpdate.Konto} Coins");
                     Console.WriteLine($"Das Konto von '{Context.User}' wurde um {amount} gesenkt. Neuer Kontostand: {userDonaterKontoToUpdate.Konto} Coins");
@@ -70,26 +66,19 @@ namespace DiscordBot.Modules
         {
             if (userToDonate.Contains("#0000"))
             {
-                var userToDonateKontoToUpdate = serverData.Users.Find(user => user.Username == username);
-                return userToDonateKontoToUpdate;
+                return serverData.Users.Find(user => user.Username == username);
             }
             else
             {
-                var userToDonateKontoToUpdate = serverData.Users.Find(user => user.Username.Contains("#" + diskriminator) == userToDonate.Contains("#" + diskriminator));
-                return userToDonateKontoToUpdate;
+                return serverData.Users.Find(user => user.Username.Contains("#" + diskriminator) == userToDonate.Contains("#" + diskriminator));
             }
         }
         #endregion GetCorrectUser
 
         #region GetKontostand
-        public string GetKontostand(ICommandContext context = null)
+        public string GetKontostand(ICommandContext context)
         {
-            string currServer = context.Guild.ToString();
-            string serverFiles = AppDomain.CurrentDomain.BaseDirectory;
-            string jsonServerFile = Path.Combine(serverFiles, "DiscordGuilds", currServer + ".json");
-            string jsonText = File.ReadAllText(jsonServerFile);
-
-            ServerData serverData = JsonConvert.DeserializeObject<ServerData>(jsonText);
+            ServerData serverData = _serverDataManager.LoadServerData((context.Channel as SocketGuildChannel).Guild);
             var getUserCurrentKonto = serverData.Users.Find(user => user.Username == context.User.ToString());
 
             return getUserCurrentKonto.Konto.ToString("#,0");
@@ -101,12 +90,7 @@ namespace DiscordBot.Modules
         {
             try
             {
-                string currServer = context.Guild.ToString();
-                string serverFiles = AppDomain.CurrentDomain.BaseDirectory;
-                string jsonServerFile = Path.Combine(serverFiles, "DiscordGuilds", currServer + ".json");
-                string jsonText = File.ReadAllText(jsonServerFile);
-
-                ServerData serverData = JsonConvert.DeserializeObject<ServerData>(jsonText);
+                var serverData = _serverDataManager.LoadServerData((context.Channel as SocketGuildChannel).Guild);
                 var targetServer = context.Guild;
                 var userKontoToUpdate = serverData.Users.Find(user => user.Username == context.User.ToString());
                 string getAmountOperator = amount.ToString().Substring(0, 1);
@@ -121,9 +105,8 @@ namespace DiscordBot.Modules
                     {
                         userKontoToUpdate.Konto += Convert.ToDouble(amount);
                     }
-                    
-                    string updatedJson = JsonConvert.SerializeObject(serverData, Formatting.Indented);
-                    File.WriteAllText(jsonServerFile, updatedJson);
+
+                    _serverDataManager.SaveServerData(context.Guild.ToString(), serverData);
 
                     Console.WriteLine($"Das Konto von '{context.User}' wurde um {amount} erhöht. Neuer Kontostand: {userKontoToUpdate.Konto}");
                 }

@@ -119,7 +119,6 @@ namespace DiscordBot
 
                 await _levelModule.AddExperience(message);
             }
-
         }
 
         public async Task UpdateUser()
@@ -133,8 +132,7 @@ namespace DiscordBot
             foreach (var toUpdateServer in serverList)
             {
                 string serverNameConverted = toUpdateServer.ToString();
-                string serverFiles = AppDomain.CurrentDomain.BaseDirectory;
-                string jsonServerFile = Path.Combine(serverFiles, "DiscordGuilds", toUpdateServer + ".json");
+                string jsonServerFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DiscordGuilds", toUpdateServer + ".json");
 
                 try
                 {
@@ -192,7 +190,7 @@ namespace DiscordBot
                         }
 
                         string updatedJSON = JsonConvert.SerializeObject(serverData, Formatting.Indented);
-                        Console.Write(updatedJSON);
+                        Console.WriteLine(updatedJSON);
                         Console.WriteLine("");
                         File.WriteAllText(jsonServerFile, updatedJSON);
                     }
