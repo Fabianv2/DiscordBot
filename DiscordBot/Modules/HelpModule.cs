@@ -55,7 +55,7 @@ namespace DiscordBot
             };
             builder.AddField(x =>
             {
-                x.Name = ":scissors:Schere :fist:Stein :raised_hand:Papier";
+                x.Name = "Schere Stein Papier";
                 x.Value = $"``{GetPrefix()}SSP`` ``[Auswahl]``";
                 x.IsInline = true;
             });

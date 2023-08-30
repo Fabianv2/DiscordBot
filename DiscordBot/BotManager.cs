@@ -63,6 +63,7 @@ namespace DiscordBot
                 .AddSingleton<HelpModule>()
                 .AddSingleton<BankingModule>()
                 .AddSingleton<LevelModule>()
+                .AddSingleton<ModeratorModule>()
                 .BuildServiceProvider();
         }
 
@@ -105,6 +106,10 @@ namespace DiscordBot
                 {
                     Console.WriteLine(result.ErrorReason + ": " + message);
                 }
+                if (result.Error.Equals(CommandError.UnmetPrecondition))
+                {
+                    await message.Channel.SendMessageAsync(result.ErrorReason);
+                }
             }
 
             if (message.Author.IsBot)
@@ -141,27 +146,15 @@ namespace DiscordBot
                     {
                         using (StreamWriter sw = new StreamWriter(jsonServerFile))
                         {
-                            var jsonLayout = "{\n" +
-                                            "    \"ServerName\": \"" + serverNameConverted + "\",\n" +
-                                            "    \"Users\": [\n" +
-                                            "        \n" +
-                                            "    ]\n" +
-                                            "}";
-                            sw.Write(jsonLayout);
+                            sw.Write(GetJsonLayout(serverNameConverted));
                         }
                     }
                     else if (!File.Exists(jsonServerFile))
                     {
-                        using (FileStream fs = File.Create(jsonServerFile)) { }
+                        using (FileStream fs = File.Create(jsonServerFile))
                         using (StreamWriter sw = new StreamWriter(jsonServerFile))
                         {
-                            var jsonLayout = "{\n" +
-                                            "    \"ServerName\": \"" + serverNameConverted + "\",\n" +
-                                            "    \"Users\": [\n" +
-                                            "        \n" +
-                                            "    ]\n" +
-                                            "}";
-                            sw.Write(jsonLayout);
+                            sw.Write(GetJsonLayout(serverNameConverted));
                         }
                     }
 
@@ -201,6 +194,16 @@ namespace DiscordBot
                     Console.WriteLine(e);
                 }
             }
+        }
+
+        private string GetJsonLayout(string serverNameConverted)
+        {
+            return "{\n" +
+                   "    \"ServerName\": \"" + serverNameConverted + "\",\n" +
+                   "    \"Users\": [\n" +
+                   "        \n" +
+                   "    ]\n" +
+                   "}";
         }
     }
 }
