@@ -35,6 +35,10 @@ namespace DiscordBot
             {
                 await ShowLevelHelp();
             }
+            else if (topic == "moderator" || topic == "Moderator")
+            {
+                await ShowModeratorHelp();
+            }
             else
             {
                 await ShowGeneralHelp();
@@ -91,11 +95,6 @@ namespace DiscordBot
                 x.Name = "Morsecode zu Text";
                 x.Value = $"``{GetPrefix()}remorse`` ``[Morsecode]``";
                 x.IsInline = true;
-            });
-            builder.WithFooter(footer =>
-            {
-                footer.Text = BotManager.BotClient.CurrentUser.ToString();
-                footer.IconUrl = BotManager.BotClient.CurrentUser.GetAvatarUrl();
             });
             await Context.Channel.SendMessageAsync("", false, builder.Build());
         }
@@ -154,6 +153,38 @@ namespace DiscordBot
             await Context.Channel.SendMessageAsync("", false, builder.Build());
         }
 
+        private async Task ShowModeratorHelp()
+        {
+            var builder = new EmbedBuilder()
+            {
+                Title = "Moderator commands",
+                Color = new Color(93, 64, 242),
+            };
+            builder.AddField(x =>
+            {
+                x.Name = "Ban User";
+                x.Value = $"``{GetPrefix()}ban`` ``[@(User)]`` ``(reason)``";
+                x.IsInline = true;
+            });
+            builder.AddField(x =>
+            {
+                x.Name = "Unban User";
+                x.Value = $"``{GetPrefix()}unban`` ``[@(User)]``";
+                x.IsInline = true;
+            });
+            builder.AddField(x =>
+            {
+                x.Name = "Kick User";
+                x.Value = $"``{GetPrefix()}kick`` ``[@(User)]`` ``(reason)``";
+                x.IsInline = false;
+            });
+            builder.WithFooter(footer =>
+            {
+                footer.Text = "Administrator permissions needed";
+            });
+            await Context.Channel.SendMessageAsync("", false, builder.Build());
+        }
+
         private async Task ShowGeneralHelp()
         {
             var builder = new EmbedBuilder()
@@ -185,6 +216,12 @@ namespace DiscordBot
             {
                 x.Name = ":up: Level";
                 x.Value = $"``{GetPrefix()}help`` ``level``";
+                x.IsInline = true;
+            });
+            builder.AddField(x =>
+            {
+                x.Name = ":shield: Moderator";
+                x.Value = $"``{GetPrefix()}help`` ``moderator``";
                 x.IsInline = true;
             });
             await Context.Channel.SendMessageAsync("", false, builder.Build());

@@ -7,8 +7,7 @@ namespace DiscordBot
     {
         public static string GetToken()
         {
-            string serverFiles = AppDomain.CurrentDomain.BaseDirectory;
-            string tokenFile = Path.Combine(serverFiles, "TOKEN", "TOKEN.txt");
+            string tokenFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TOKEN", "TOKEN.txt");
             StreamReader srToken = new StreamReader(tokenFile);
             return srToken.ReadToEnd();
         }

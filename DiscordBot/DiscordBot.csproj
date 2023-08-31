@@ -141,7 +141,7 @@
     <Compile Include="AccountManager\ServerDataManager.cs" />
     <Compile Include="AccountManager\UserData.cs" />
     <Compile Include="BotManager.cs" />
-    <Compile Include="ModeratorModule.cs" />
+    <Compile Include="Modules\ModeratorModule.cs" />
     <Compile Include="Modules\BankingModule.cs" />
     <Compile Include="Modules\HelpModule.cs" />
     <Compile Include="Modules\LanguageModule.cs" />
