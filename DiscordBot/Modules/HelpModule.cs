@@ -176,7 +176,13 @@ namespace DiscordBot
             {
                 x.Name = "Kick User";
                 x.Value = $"``{GetPrefix()}kick`` ``[@(User)]`` ``(reason)``";
-                x.IsInline = false;
+                x.IsInline = true;
+            });
+            builder.AddField(x =>
+            {
+                x.Name = "Remove Message";
+                x.Value = $"``{GetPrefix()}rm`` ``[@(User)]`` ``(1-25)``";
+                x.IsInline = true;
             });
             builder.WithFooter(footer =>
             {

@@ -355,4 +355,5 @@ MigrationBackup/
 /TOKEN/
 /DiscordGuilds/
 /apiKey/
+/BlacklistedWords/
 Infos.txt

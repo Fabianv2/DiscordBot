@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using DiscordBot.AccountManager;
 using Newtonsoft.Json;
@@ -15,17 +16,32 @@ namespace DiscordBot.Modules
         #region Commands
         [Command("Level")]
         [Alias("level")]
-        public async Task ShowPlayerLevel()
+        public async Task ShowPlayerLevel(IGuildUser username = null)
         {
-            await Context.Channel.SendMessageAsync($"{Context.User.Mention}, du bist level {GetPlayerLevel(Context)}");
+            if (username == null)
+            {
+                await Context.Channel.SendMessageAsync($"{Context.User.Mention}, du bist level {GetPlayerLevel(Context, username)}");
+            }
+            else
+            {
+                await Context.Channel.SendMessageAsync($"{username.Mention}, du bist level {GetPlayerLevel(Context, username)}");
+            }
+            
         }
 
         [Command("XP")]
         [Alias("xp")]
-        public async Task ShowPlayerXP()
+        public async Task ShowPlayerXP(IGuildUser username = null)
         {
             double currPlayerXP = (Convert.ToDouble(GetPlayerLevel(Context))+ 1) * 5;
-            await Context.Channel.SendMessageAsync($"{Context.User.Mention}, dein XP-Stand beträgt: {GetPlayerXP(Context)} von {currPlayerXP}");
+            if (username == null)
+            {
+                await Context.Channel.SendMessageAsync($"{Context.User.Mention}, dein XP-Stand beträgt: {GetPlayerXP(Context, username)} von {currPlayerXP}");
+            }
+            else
+            {
+                await Context.Channel.SendMessageAsync($"{username.Mention}, dein XP-Stand beträgt: {GetPlayerXP(Context, username)} von {currPlayerXP}");
+            }
         }
         #endregion Commands
 
@@ -51,20 +67,36 @@ namespace DiscordBot.Modules
             _serverDataManager.SaveServerData(currServer, serverData);
         }
 
-        public string GetPlayerLevel(ICommandContext context)
+        public string GetPlayerLevel(ICommandContext context, IGuildUser username = null)
         {
             ServerData serverData = _serverDataManager.LoadServerData((context.Channel as SocketGuildChannel).Guild);
-            var currUserLevel = serverData.Users.Find(user => user.Username == context.User.ToString());
-
-            return currUserLevel.Level.ToString();
+            
+            if (username == null)
+            {
+                var currUserLevel = serverData.Users.Find(user => user.Username == context.User.ToString());
+                return currUserLevel.Level.ToString();
+            }
+            else
+            {
+                var currUserLevel = serverData.Users.Find(user => user.Username == username.ToString());
+                return currUserLevel.Level.ToString();
+            }
         }
 
-        public string GetPlayerXP(ICommandContext context)
+        public string GetPlayerXP(ICommandContext context, IGuildUser username = null)
         {
             ServerData serverData = _serverDataManager.LoadServerData((context.Channel as SocketGuildChannel).Guild);
-            var currUserLevel = serverData.Users.Find(user => user.Username == context.User.ToString());
-
-            return (currUserLevel.EXP + 0.5).ToString();
+            
+            if (username == null)
+            {
+                var currUserLevel = serverData.Users.Find(user => user.Username == context.User.ToString());
+                return (currUserLevel.EXP + 0.5).ToString();
+            }
+            else
+            {
+                var currUserLevel = serverData.Users.Find(user => user.Username == username.ToString());
+                return (currUserLevel.EXP + 0.5).ToString();
+            }
         }
         #endregion Methoden
     }

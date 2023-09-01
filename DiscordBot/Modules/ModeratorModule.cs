@@ -12,7 +12,6 @@ namespace DiscordBot
 {
     public class ModeratorModule : ModuleBase<SocketCommandContext>
     {
-
         [Command("Ban")]
         [Alias("ban")]
         [RequireUserPermission(GuildPermission.Administrator, ErrorMessage = "Du hast nicht die Berechtigung, User zu bannen!")]
@@ -95,6 +94,42 @@ namespace DiscordBot
                 };
                 await Context.Channel.SendMessageAsync("", false, builder.Build());
                 Console.WriteLine($"Der Spieler '{user}', wurde von '{Context.User}' gekickt.");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
+        [Command("rm")]
+        [RequireUserPermission(GuildPermission.Administrator, ErrorMessage = "Du hast nicht die Berechtigung, Nachrichten anderer User zu löschen!")]
+        public async Task RemoveUserMessage(SocketUser user, int amountDeletes)
+        {
+            try
+            {
+                if (amountDeletes > 0 && amountDeletes <= 25)
+                {
+                    var messages = Context.Channel.GetMessagesAsync(amountDeletes).FlattenAsync();
+
+                    foreach (IUserMessage message in await messages)
+                    {
+                        if (message.Author.Id == user.Id)
+                        {
+                            await message.DeleteAsync();
+                            Console.WriteLine($"Removed message: {message}");
+                        }
+                    }
+                    EmbedBuilder builder = new EmbedBuilder()
+                    {
+                        Description = $"{amountDeletes} Nachrichten von {user.Mention}, wurden durch {Context.User.Mention} gelöscht.",
+                        Color = new Color(93, 64, 242)
+                    };
+                    await Context.Channel.SendMessageAsync("", false, builder.Build());
+                }
+                else
+                {
+                    await Context.Channel.SendMessageAsync($"{Context.User.Mention}, gib eine Zahl von 1-25 an!");
+                }
             }
             catch (Exception e)
             {

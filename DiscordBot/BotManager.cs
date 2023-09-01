@@ -112,6 +112,16 @@ namespace DiscordBot
                 }
             }
 
+            string blacklistFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BlacklistedWords", "Blacklist.txt");
+            StreamReader sr = new StreamReader(blacklistFile);
+            foreach (var blacklistedWord in sr.ReadLine())
+            {
+                if (message.Content == blacklistedWord.ToString())
+                {
+                    await message.DeleteAsync();
+                }
+            }
+
             if (message.Author.IsBot)
             {
                 return;
