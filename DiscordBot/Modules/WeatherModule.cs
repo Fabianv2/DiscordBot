@@ -8,7 +8,7 @@ namespace DiscordBot
 {
     public class WeatherModule : ModuleBase<SocketCommandContext>
     {
-        
+        //Überarbeiten
 
         //[Command("Wetter")]
         //[Alias("wetter", "Weather", "weather")]
@@ -34,6 +34,5 @@ namespace DiscordBot
                 }
             }
         }
-
     }
 }

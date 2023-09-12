@@ -150,7 +150,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Secret.cs" />
     <Compile Include="Modules\GameModule.cs" />
-    <Compile Include="Modules\TestCommandsModule.cs" />
     <Compile Include="Modules\WeatherModule.cs" />
   </ItemGroup>
   <ItemGroup>

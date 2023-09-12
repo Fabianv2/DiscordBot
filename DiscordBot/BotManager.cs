@@ -56,7 +56,6 @@ namespace DiscordBot
         {
             return new ServiceCollection()
                 .AddSingleton<BotManager>()
-                .AddSingleton<TestCommandsModule>()
                 .AddSingleton<GameModule>()
                 .AddSingleton<LanguageModule>()
                 .AddSingleton<WeatherModule>()
@@ -75,13 +74,18 @@ namespace DiscordBot
             await UpdateUser();
             BotClient.MessageReceived += Nachricht;
 
-            var guild = BotClient.GetGuild(877244280425566248);
+            //Ändern
+            string guildIdPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PrivGuild", "GuildID.txt");
+            StreamReader sr = new StreamReader(guildIdPath);
+            ulong guildID = Convert.ToUInt64(sr.ReadToEnd());
+
+            var guild = BotClient.GetGuild(guildID);
             var guildCommand = new SlashCommandBuilder();
-            guildCommand.WithName("first-command");
-            guildCommand.WithDescription("This is my first guild slash command!");
+            guildCommand.WithName("slash-command-name");
+            guildCommand.WithDescription("slash-command-Description");
             var globalCommand = new SlashCommandBuilder();
-            globalCommand.WithName("first-global-command");
-            globalCommand.WithDescription("This is my first global slash command");
+            globalCommand.WithName("Global-Command-Name");
+            globalCommand.WithDescription("Global-Command-Description");
             try
             {
                 await guild.CreateApplicationCommandAsync(guildCommand.Build());
