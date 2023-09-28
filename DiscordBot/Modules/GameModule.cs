@@ -17,12 +17,12 @@ namespace DiscordBot
         public async Task SchereSteinPapier([Remainder] string playerSelection)
         {
             List<string> auswahlListe = new List<string>
-            { "Schere","Stein","Papier" };
+            { "schere","stein","papier" };
             string _playerSelection = playerSelection.ToLower();
             string botSelection;
 
             int i = random.Next(0, 3);
-            botSelection = auswahlListe[i].ToLower();
+            botSelection = auswahlListe[i];
             try
             {
                 if (_playerSelection == botSelection)
@@ -38,7 +38,7 @@ namespace DiscordBot
                 }
                 else if (_playerSelection == "schere" && botSelection == "stein" ||
                          _playerSelection == "stein" && botSelection == "papier" ||
-                         _playerSelection == "Papier" && botSelection == "schere")
+                         _playerSelection == "papier" && botSelection == "schere")
                 {
                     _bankingModule.UpdateKonto(Context, -1);
                     await Context.Channel.SendMessageAsync($"{botSelection} \n{Context.Message.Author.Mention}, du hast verloren! (-1 :coin:) \nAktueller Kontostand: {_bankingModule.GetKontostand(Context)} :coin:");

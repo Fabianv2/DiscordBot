@@ -55,6 +55,7 @@ namespace DiscordBot.Modules
             {
                 Console.WriteLine($"Der Benutzer '@{userToDonateKontoToUpdate}' wurde nicht gefunden.");
             }
+            await Task.CompletedTask;
         }
 
         #endregion Commands

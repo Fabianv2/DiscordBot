@@ -45,7 +45,7 @@ namespace DiscordBot
             }
 
             Console.WriteLine($"Server: {Context.Guild}");
-            Console.WriteLine($"(Help) {Context.User.ToString()}: {Context.Message}");
+            Console.WriteLine($"(Help) {Context.User}: {Context.Message}");
             Console.WriteLine($"Help-Thema: {topic}");
             Console.WriteLine("-----------------------------------------------------------------------------");
         }

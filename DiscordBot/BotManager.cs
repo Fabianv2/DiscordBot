@@ -75,26 +75,30 @@ namespace DiscordBot
             BotClient.MessageReceived += Nachricht;
 
             //Ändern
-            string guildIdPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PrivGuild", "GuildID.txt");
-            StreamReader sr = new StreamReader(guildIdPath);
-            ulong guildID = Convert.ToUInt64(sr.ReadToEnd());
+            int i = 0;
+            if (i == 1)
+            {
+                string guildIdPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PrivGuild", "GuildID.txt");
+                StreamReader sr = new StreamReader(guildIdPath);
+                ulong guildID = Convert.ToUInt64(sr.ReadToEnd());
 
-            var guild = BotClient.GetGuild(guildID);
-            var guildCommand = new SlashCommandBuilder();
-            guildCommand.WithName("slash-command-name");
-            guildCommand.WithDescription("slash-command-Description");
-            var globalCommand = new SlashCommandBuilder();
-            globalCommand.WithName("Global-Command-Name");
-            globalCommand.WithDescription("Global-Command-Description");
-            try
-            {
-                await guild.CreateApplicationCommandAsync(guildCommand.Build());
-                await BotClient.CreateGlobalApplicationCommandAsync(globalCommand.Build());
-            }
-            catch (HttpException exception)
-            {
-                var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
-                Console.WriteLine(json);
+                var guild = BotClient.GetGuild(guildID);
+                var guildCommand = new SlashCommandBuilder();
+                guildCommand.WithName("slash-command-name");
+                guildCommand.WithDescription("slash-command-Description");
+                var globalCommand = new SlashCommandBuilder();
+                globalCommand.WithName("Global-Command-Name");
+                globalCommand.WithDescription("Global-Command-Description");
+                try
+                {
+                    await guild.CreateApplicationCommandAsync(guildCommand.Build());
+                    await BotClient.CreateGlobalApplicationCommandAsync(globalCommand.Build());
+                }
+                catch (HttpException exception)
+                {
+                    var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
+                    Console.WriteLine(json);
+                }
             }
         }
 
