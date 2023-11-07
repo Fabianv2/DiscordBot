@@ -69,7 +69,7 @@ namespace DiscordBot
             {
                 if (playerGuess == botNumber)
                 {
-                    _bankingModule.UpdateKonto(Context, 6);
+                    _bankingModule.UpdateKonto(Context, 8);
                     await Context.Channel.SendMessageAsync($"{botNumber} :game_die: \n{Context.Message.Author.Mention}, du hast die richtige Zahl erraten! (+8 :coin:) \nAktueller Kontostand: {_bankingModule.GetKontostand(Context)} :coin:");
                 }
                 else

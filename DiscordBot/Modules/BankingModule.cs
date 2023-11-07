@@ -100,16 +100,16 @@ namespace DiscordBot.Modules
                 {
                     if (userKontoToUpdate.Konto > 0 && getAmountOperator == "-")
                     {
-                        userKontoToUpdate.Konto -= Convert.ToDouble(amount);
+                        userKontoToUpdate.Konto -= Convert.ToDouble(amount.ToString().Substring(1, amount.ToString().Length - 1));
+                        Console.WriteLine($"Das Konto von '{context.User}' wurde um {amount} gesenkt. Neuer Kontostand: {userKontoToUpdate.Konto}");
                     }
                     else
                     {
                         userKontoToUpdate.Konto += Convert.ToDouble(amount);
+                        Console.WriteLine($"Das Konto von '{context.User}' wurde um {amount} erhöht. Neuer Kontostand: {userKontoToUpdate.Konto}");
                     }
 
                     _serverDataManager.SaveServerData(context.Guild.ToString(), serverData);
-
-                    Console.WriteLine($"Das Konto von '{context.User}' wurde um {amount} erhöht. Neuer Kontostand: {userKontoToUpdate.Konto}");
                 }
                 else
                 {
