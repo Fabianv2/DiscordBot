@@ -4,6 +4,7 @@ using Discord.Net;
 using Discord.WebSocket;
 using DiscordBot.AccountManager;
 using DiscordBot.Modules;
+using DSharpPlus.Net;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
@@ -30,6 +31,7 @@ namespace DiscordBot
             { GatewayIntents = GatewayIntents.All };
 
             BotClient = new DiscordSocketClient(config);
+            
             Commands = new CommandService();
             Services = ConfigureServices();
             await BotClient.LoginAsync(Discord.TokenType.Bot, Secret.GetToken());
@@ -37,7 +39,7 @@ namespace DiscordBot
             BotClient.Log += BotHatWasGelogged;
             BotClient.Ready += BotIstBereit;
             BotClient.SlashCommandExecuted += SlashCommandHandler;
-
+            
             await Task.Delay(-1);
         }
 
@@ -66,11 +68,10 @@ namespace DiscordBot
                 .BuildServiceProvider();
         }
 
-
         public async Task BotIstBereit()
         {
             await Commands.AddModulesAsync(Assembly.GetEntryAssembly(), Services);
-            await BotClient.SetGameAsync("In Wartung");
+            await BotClient.SetGameAsync("In Wartung - #help");
             await UpdateUser();
             BotClient.MessageReceived += Nachricht;
 
@@ -85,10 +86,10 @@ namespace DiscordBot
                 var guild = BotClient.GetGuild(guildID);
                 var guildCommand = new SlashCommandBuilder();
                 guildCommand.WithName("slash-command-name");
-                guildCommand.WithDescription("slash-command-Description");
+                guildCommand.WithDescription("slash-command-description");
                 var globalCommand = new SlashCommandBuilder();
-                globalCommand.WithName("Global-Command-Name");
-                globalCommand.WithDescription("Global-Command-Description");
+                globalCommand.WithName("global-command-name");
+                globalCommand.WithDescription("global-command-description");
                 try
                 {
                     await guild.CreateApplicationCommandAsync(guildCommand.Build());
