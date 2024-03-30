@@ -76,7 +76,7 @@ namespace DiscordBot
         [Command("Kick")]
         [Alias("kick")]
         [RequireUserPermission(GuildPermission.Administrator, ErrorMessage = "Du hast nicht die Berechtigung, User zu kicken!")]
-        public async Task KickUser(IGuildUser user, [Remainder]string reason)
+        public async Task KickUser(IGuildUser user, [Remainder] string reason)
         {
             try
             {
@@ -103,32 +103,52 @@ namespace DiscordBot
 
         [Command("rm")]
         [RequireUserPermission(GuildPermission.Administrator, ErrorMessage = "Du hast nicht die Berechtigung, Nachrichten anderer User zu löschen!")]
-        public async Task RemoveUserMessage(SocketUser user, int amountDeletes)
+        public async Task RemoveUserMessage(int amountDeletes, [Remainder] SocketUser user = null)
         {
             try
             {
-                if (amountDeletes > 0 && amountDeletes <= 25)
-                {
-                    var messages = Context.Channel.GetMessagesAsync(amountDeletes).FlattenAsync();
 
-                    foreach (IUserMessage message in await messages)
+                var messages = Context.Channel.GetMessagesAsync(amountDeletes + 1).FlattenAsync();
+
+                if (user != null)
+                {
+                    if (amountDeletes > 0 && amountDeletes < 26)
                     {
-                        if (message.Author.Id == user.Id)
+                        foreach (IUserMessage message in await messages)
                         {
-                            await message.DeleteAsync();
-                            Console.WriteLine($"Removed message: {message}");
+                            if (message.Author.Id == user.Id)
+                            {
+                                await message.DeleteAsync();
+                                Console.WriteLine($"Removed message: {message}");
+                                await Task.Delay(600);
+                            }
                         }
+                        EmbedBuilder builder = new EmbedBuilder()
+                        {
+                            Description = $"{amountDeletes} Nachrichten von {user.Mention}, wurden durch {Context.User.Mention} gelöscht.",
+                            Color = new Color(93, 64, 242)
+                        };
+                        await Context.Channel.SendMessageAsync("", false, builder.Build());
                     }
-                    EmbedBuilder builder = new EmbedBuilder()
+                    else
                     {
-                        Description = $"{amountDeletes} Nachrichten von {user.Mention}, wurden durch {Context.User.Mention} gelöscht.",
-                        Color = new Color(93, 64, 242)
-                    };
-                    await Context.Channel.SendMessageAsync("", false, builder.Build());
+                        await Context.Channel.SendMessageAsync($"{Context.User.Mention}, gib eine Zahl von 1-25 an!");
+                    }
                 }
                 else
                 {
-                    await Context.Channel.SendMessageAsync($"{Context.User.Mention}, gib eine Zahl von 1-25 an!");
+                    await (Context.Channel as ITextChannel).DeleteMessagesAsync(await messages);
+
+                    foreach (IUserMessage message in await messages)
+                    {
+                        Console.WriteLine($"Removed message: {message}");
+                    }
+                    EmbedBuilder builder = new EmbedBuilder()
+                    {
+                        Description = $"{amountDeletes} Nachrichten wurden durch {Context.User.Mention} gelöscht.",
+                        Color = new Color(93, 64, 242)
+                    };
+                    await Context.Channel.SendMessageAsync("", false, builder.Build());
                 }
             }
             catch (Exception e)
