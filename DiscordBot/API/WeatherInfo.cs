@@ -28,11 +28,6 @@ namespace DiscordBot.API
             public double humidity { get; set; }
         }
 
-        public class visibility
-        {
-            public double Visibility { get; set; }
-        }
-
         public class wind
         {
             public double speed { get; set; }
@@ -43,26 +38,11 @@ namespace DiscordBot.API
             public int all { get; set; }
         }
 
-        public class dt
-        {
-            public int DT { get; set; }
-        }
-
         public class sys
         {
             public string country { get; set; }
             public long sunrise { get; set; }
             public long sunset { get; set; }
-        }
-
-        public class timezone
-        {
-            public int Timezone { get; set; }
-        }
-
-        public class name
-        {
-            public string Name { get; set; }
         }
 
         public class root
