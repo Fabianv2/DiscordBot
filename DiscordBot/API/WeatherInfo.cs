@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,55 +9,39 @@ namespace DiscordBot.API
 {
     public class WeatherInfo
     {
-        public class coord
+        public class location
         {
-            public double lon { get; set; }
-            public double lat { get; set; }
+            public string name { get; set; }
+            public string region { get; set; }
+            public string country { get; set; }
+            public string localtime_epoch { get; set; }
+            public string localtime { get; set; }
         }
 
-        public class weather
+        public class condition
         {
-            public string main { get; set; }
-            public string description { get; set; }
+            public string text { get; set; }
             public string icon { get; set; }
         }
 
-        public class main
+        public class current
         {
-            public double temp { get; set; }
-            public double feels_like { get; set; }
-            public double humidity { get; set; }
+            public double temp_c { get; set; }
+            public double temp_f { get; set; }
+            public condition condition { get; set; }
+            public double wind_mph { get; set; }
+            public double precip_mm { get; set; }
+            public int humidity { get; set; }
+            public int cloud { get; set; }
+            public double feelslike_c { get; set; }
+            public double feelslike_f { get; set; }
+            public double vis_km { get; set; }
         }
-
-        public class wind
-        {
-            public double speed { get; set; }
-        }
-
-        public class clouds
-        {
-            public int all { get; set; }
-        }
-
-        public class sys
-        {
-            public string country { get; set; }
-            public long sunrise { get; set; }
-            public long sunset { get; set; }
-        }
-
+        
         public class root
         {
-            public coord coord { get; set; }
-            public List<weather> weather { get; set;}
-            public main main { get; set; }
-            public int visibility { get; set; }
-            public wind wind { get; set; }
-            public clouds clouds { get; set; }
-            public int dt { get; set; }
-            public sys sys { get; set; }
-            public int timezone { get; set; }
-            public string name { get; set; }
+            public location location { get; set; }
+            public current current { get; set; }
         }
     }
 }
