@@ -3,6 +3,11 @@ using Discord;
 using System;
 using System.Threading.Tasks;
 using DiscordBot.Modules;
+using Discord.Net;
+using Newtonsoft.Json;
+using System.IO;
+using DSharpPlus.SlashCommands;
+using Discord.WebSocket;
 
 namespace DiscordBot
 {
@@ -10,6 +15,7 @@ namespace DiscordBot
     {
         BankingModule _bankingModule = new BankingModule();
         LevelModule _levelModule = new LevelModule();
+        //ApplicationCommandModule acm;
 
         private string GetPrefix() => BotManager.PREFIX;
 
@@ -65,25 +71,25 @@ namespace DiscordBot
             };
             builder.AddField(x =>
             {
-                x.Name = "Schere Stein Papier";
-                x.Value = $"``{GetPrefix()}SSP`` ``[Auswahl]``";
+                x.Name = "Rock Paper Scissors";
+                x.Value = $"``{GetPrefix()}SSP`` ``[Selection]``";
                 x.IsInline = true;
             });
             builder.AddField(x =>
             {
-                x.Name = "Schere Stein Papier Echse Spock";
-                x.Value = $"``{GetPrefix()}SSPES`` ``[Auswahl]``";
+                x.Name = "Rock Paper Scissors Lizard Spock";
+                x.Value = $"``{GetPrefix()}SSPES`` ``[Selection]``";
                 x.IsInline = true;
             });
             builder.AddField(x =>
             {
-                x.Name = ":game_die:Errate Wuerfelnummer";
-                x.Value = $"``{GetPrefix()}rn`` ``[Auswahl (1-6)]``";
+                x.Name = ":game_die:Guess the dice roll";
+                x.Value = $"``{GetPrefix()}rn`` ``[Selection (1-6)]``";
                 x.IsInline = true;
             });
             builder.WithFooter(footer =>
             {
-                footer.Text = $"{Context.User}-Kontostand: {_bankingModule.GetKontostand(Context)} Coins";
+                footer.Text = $"{Context.User}-Account balance: {_bankingModule.GetKontostand(Context)} Coins";
                 footer.IconUrl = Context.User.GetAvatarUrl();
             });
             await Context.Channel.SendMessageAsync("", false, builder.Build());
@@ -98,13 +104,13 @@ namespace DiscordBot
             };
             builder.AddField(x =>
             {
-                x.Name = "Text zu Morsecode";
+                x.Name = "Text to Morsecode";
                 x.Value = $"``{GetPrefix()}morse`` ``[Text]``";
                 x.IsInline = true;
             });
             builder.AddField(x =>
             {
-                x.Name = "Morsecode zu Text";
+                x.Name = "Morsecode to Text";
                 x.Value = $"``{GetPrefix()}remorse`` ``[Morsecode]``";
                 x.IsInline = true;
             });
@@ -120,19 +126,19 @@ namespace DiscordBot
             };
             builder.AddField(x =>
             {
-                x.Name = ":credit_card:Kontostand";
+                x.Name = ":credit_card:Account balance";
                 x.Value = $"``{GetPrefix()}kontostand``";
                 x.IsInline = true;
             });
             builder.AddField(x =>
             {
-                x.Name = ":money_with_wings:Coins spenden";
+                x.Name = ":money_with_wings:Donate coins";
                 x.Value = $"``{GetPrefix()}donate`` ``[@(user)]`` ``[amount]``";
                 x.IsInline = true;
             });
             builder.WithFooter(footer =>
             {
-                footer.Text = $"{Context.User}-Kontostand: {_bankingModule.GetKontostand(Context)} Coins";
+                footer.Text = $"{Context.User}-Account balance: {_bankingModule.GetKontostand(Context)} Coins";
                 footer.IconUrl = Context.User.GetAvatarUrl();
             });
             await Context.Channel.SendMessageAsync("", false, builder.Build());
@@ -147,13 +153,13 @@ namespace DiscordBot
             };
             builder.AddField(x =>
             {
-                x.Name = "Level anzeigen";
+                x.Name = "Show level";
                 x.Value = $"``{GetPrefix()}level``";
                 x.IsInline = true;
             });
             builder.AddField(x =>
             {
-                x.Name = "XP anzeigen";
+                x.Name = "Show XP";
                 x.Value = $"``{GetPrefix()}xp``";
                 x.IsInline = true;
             });
@@ -209,7 +215,7 @@ namespace DiscordBot
             await Context.Channel.SendMessageAsync("", false, builder.Build());
         }
 
-        private async Task ShowGeneralHelp()
+        private async Task ShowGeneralHelp([Remainder]SocketSlashCommand command = null)
         {
             var builder = new EmbedBuilder()
             {
@@ -258,7 +264,16 @@ namespace DiscordBot
             {
                 footer.Text = "For '#help moderator', administrator permissions are required";
             });
-            await Context.Channel.SendMessageAsync("", false, builder.Build());
+
+            if (command == null)
+            {
+                await Context.Channel.SendMessageAsync("", false, builder.Build());
+            }
+            else
+            {
+                await command.RespondAsync(embed: builder.Build());
+            }
+
         }
 
         private async Task ShowWeatherHelp()
@@ -275,6 +290,16 @@ namespace DiscordBot
                 x.IsInline = true;
             });
             await Context.Channel.SendMessageAsync("", false, builder.Build());
+        }
+
+
+        [SlashCommand("help", "Shows the command menu")]
+        public async Task SlashCommandShowHelp(SocketSlashCommand command)
+        {
+            if (command.Data.Name.ToLower() == "help")
+            {
+                await ShowGeneralHelp(command);
+            }
         }
     }
 }

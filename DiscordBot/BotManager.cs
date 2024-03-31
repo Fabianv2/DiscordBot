@@ -19,6 +19,7 @@ namespace DiscordBot
     public class BotManager
     {
         LevelModule _levelModule = new LevelModule();
+        HelpModule _helpModule = new HelpModule();
 
         public static DiscordSocketClient BotClient;
         public static CommandService Commands;
@@ -31,15 +32,15 @@ namespace DiscordBot
             { GatewayIntents = GatewayIntents.All };
 
             BotClient = new DiscordSocketClient(config);
-            
+
             Commands = new CommandService();
             Services = ConfigureServices();
             await BotClient.LoginAsync(Discord.TokenType.Bot, Secret.GetToken());
             await BotClient.StartAsync();
             BotClient.Log += BotHatWasGelogged;
-            BotClient.Ready += BotIstBereit;
+            BotClient.Ready += Client_Ready;
             BotClient.SlashCommandExecuted += SlashCommandHandler;
-            
+
             await Task.Delay(-1);
         }
 
@@ -51,7 +52,7 @@ namespace DiscordBot
 
         private async Task SlashCommandHandler(SocketSlashCommand command)
         {
-            await command.RespondAsync($"You Executed {command.Data.Name}");
+            await _helpModule.SlashCommandShowHelp(command);
         }
 
         public IServiceProvider ConfigureServices()
@@ -68,39 +69,12 @@ namespace DiscordBot
                 .BuildServiceProvider();
         }
 
-        public async Task BotIstBereit()
+        public async Task Client_Ready()
         {
             await Commands.AddModulesAsync(Assembly.GetEntryAssembly(), Services);
             await BotClient.SetGameAsync("In Wartung - #help");
             await UpdateUser();
             BotClient.MessageReceived += Nachricht;
-
-            //Ändern
-            int i = 0;
-            if (i == 1)
-            {
-                string guildIdPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PrivGuild", "GuildID.txt");
-                StreamReader sr = new StreamReader(guildIdPath);
-                ulong guildID = Convert.ToUInt64(sr.ReadToEnd());
-
-                var guild = BotClient.GetGuild(guildID);
-                var guildCommand = new SlashCommandBuilder();
-                guildCommand.WithName("slash-command-name");
-                guildCommand.WithDescription("slash-command-description");
-                var globalCommand = new SlashCommandBuilder();
-                globalCommand.WithName("global-command-name");
-                globalCommand.WithDescription("global-command-description");
-                try
-                {
-                    await guild.CreateApplicationCommandAsync(guildCommand.Build());
-                    await BotClient.CreateGlobalApplicationCommandAsync(globalCommand.Build());
-                }
-                catch (HttpException exception)
-                {
-                    var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
-                    Console.WriteLine(json);
-                }
-            }
         }
 
         public async Task Nachricht(SocketMessage arg)
@@ -120,6 +94,9 @@ namespace DiscordBot
                     await message.Channel.SendMessageAsync(result.ErrorReason);
                 }
             }
+
+
+
 
             string blacklistFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BlacklistedWords", "Blacklist.txt");
             StreamReader sr = new StreamReader(blacklistFile);
