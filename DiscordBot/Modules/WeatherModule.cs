@@ -15,11 +15,10 @@ namespace DiscordBot
     public class WeatherModule : ModuleBase<SocketCommandContext>
     {
         ConvertValues cv = new ConvertValues();
-        Localtime lt = new Localtime();
 
         [Command("Wetter")]
         [Alias("wetter", "Weather", "weather")]
-        public async Task GetWeather(string location)
+        public async Task GetWeather(string location, [Remainder]int? days = null)
         {
             string apiFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "apiKey", "apiKey.txt");
             StreamReader sr = new StreamReader(apiFile);
@@ -27,23 +26,30 @@ namespace DiscordBot
 
             using (HttpClient client = new HttpClient())
             {
-                //string url = $"https://api.openweathermap.org/data/2.5/weather?q={location}&APPID={apiKey}";
-                string url = $"https://api.weatherapi.com/v1/current.json?key={apiKey}&q={location}";
+                string url;
+                if (days == null)
+                {
+                    url = $"https://api.weatherapi.com/v1/current.json?key={apiKey}&q={location}";
+                }
+                else
+                {
+                    url = $"https://api.weatherapi.com/v1/current.json?key={apiKey}&q={location}&days={days}";
+                }
+                
                 var json = await client.GetStringAsync(url);
-                WeatherInfo.root Info = JsonConvert.DeserializeObject<WeatherInfo.root>(json);
+                WeatherInfo.Root Info = JsonConvert.DeserializeObject<WeatherInfo.Root>(json);
                 await DisplayWeather(Info);
             }
 
             await Task.CompletedTask;
         }
 
-        public async Task DisplayWeather(WeatherInfo.root Info)
+        public async Task DisplayWeather(WeatherInfo.Root Info)
         {
             var builder = new EmbedBuilder()
             {
-                Title = $"**Wetter in {Info.location.name}, {Info.location.country}**",
+                Title = $"**Weather in {Info.location.name}, {Info.location.country}**",
                 Description = $"**{Info.current.condition.text}** with **{Info.current.humidity}%** humidity and **{cv.MilesToKilometers(Info.current.wind_mph)} km/h** winds.",
-                //ThumbnailUrl = "https://cdn.jim-nielsen.com/ios/512/weather-2021-12-07.png",
                 ThumbnailUrl = $"https:{Info.current.condition.icon}",
                 Color = new Color(93, 64, 242)
             };

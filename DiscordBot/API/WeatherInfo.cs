@@ -9,7 +9,7 @@ namespace DiscordBot.API
 {
     public class WeatherInfo
     {
-        public class location
+        public class Location
         {
             public string name { get; set; }
             public string region { get; set; }
@@ -18,17 +18,17 @@ namespace DiscordBot.API
             public string localtime { get; set; }
         }
 
-        public class condition
+        public class Condition
         {
             public string text { get; set; }
             public string icon { get; set; }
         }
 
-        public class current
+        public class Current
         {
             public double temp_c { get; set; }
             public double temp_f { get; set; }
-            public condition condition { get; set; }
+            public Condition condition { get; set; }
             public double wind_mph { get; set; }
             public double precip_mm { get; set; }
             public int humidity { get; set; }
@@ -38,10 +38,10 @@ namespace DiscordBot.API
             public double vis_km { get; set; }
         }
         
-        public class root
+        public class Root
         {
-            public location location { get; set; }
-            public current current { get; set; }
+            public Location location { get; set; }
+            public Current current { get; set; }
         }
     }
 }
