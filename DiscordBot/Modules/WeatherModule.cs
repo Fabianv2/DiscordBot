@@ -1,12 +1,10 @@
 ﻿using Discord;
 using Discord.Commands;
 using DiscordBot.API;
-using DiscordBot.Modules;
 using DiscordBot.Services;
 using Newtonsoft.Json;
 using System;
 using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -18,7 +16,7 @@ namespace DiscordBot
 
         [Command("Wetter")]
         [Alias("wetter", "Weather", "weather")]
-        public async Task GetWeather(string location, [Remainder]int? days = null)
+        public async Task GetWeather(string location, [Remainder] int? days = null)
         {
             string apiFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "apiKey", "apiKey.txt");
             StreamReader sr = new StreamReader(apiFile);
@@ -26,15 +24,7 @@ namespace DiscordBot
 
             using (HttpClient client = new HttpClient())
             {
-                string url;
-                if (days == null)
-                {
-                    url = $"https://api.weatherapi.com/v1/current.json?key={apiKey}&q={location}";
-                }
-                else
-                {
-                    url = $"https://api.weatherapi.com/v1/current.json?key={apiKey}&q={location}&days={days}";
-                }
+                string url = $"https://api.weatherapi.com/v1/current.json?key={apiKey}&q={location}";
                 
                 var json = await client.GetStringAsync(url);
                 WeatherInfo.Root Info = JsonConvert.DeserializeObject<WeatherInfo.Root>(json);
