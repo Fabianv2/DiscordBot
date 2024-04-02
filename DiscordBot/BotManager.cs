@@ -41,6 +41,9 @@ namespace DiscordBot
             BotClient.Ready += Client_Ready;
             BotClient.SlashCommandExecuted += SlashCommandHandler;
 
+            TimerManager _TimerManager = new TimerManager(BotClient);
+            _TimerManager.Start();
+
             await Task.Delay(-1);
         }
 
@@ -122,7 +125,7 @@ namespace DiscordBot
             }
         }
 
-        public async Task UpdateUser()
+        public async Task UpdateUser([Remainder]DiscordSocketClient botClient = null)
         {
             List<string> serverList = new List<string>();
             foreach (var foundServer in BotClient.Guilds)

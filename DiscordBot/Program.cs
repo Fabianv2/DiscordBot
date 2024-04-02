@@ -1,4 +1,7 @@
 ﻿using DiscordBot;
+using DiscordBot.AccountManager;
+using DiscordBot.Modules;
+using System;
 
 namespace TutorialBot
 {
