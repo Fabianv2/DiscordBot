@@ -22,8 +22,10 @@ namespace DiscordBot.Modules
 
         [Command("donate")]
         [Alias("Donate")]
-        public async Task DonateCoins(SocketGuildUser userToDonateID, [Remainder] int amount)
+        public async Task DonateCoins(SocketGuildUser userToDonateID, double amount)
         {
+            amount = int.Parse(Convert.ToString(amount).Replace(".", ""));
+
             string username = userToDonateID.Username;
             string diskriminator = userToDonateID.Discriminator;
             string userToDonate = $"{username}#{diskriminator}";
@@ -37,7 +39,7 @@ namespace DiscordBot.Modules
                 if (userDonaterKontoToUpdate.Konto < amount)
                 {
                     Console.WriteLine($"Der Benutzer '@{Context.User}' hat nicht genügend Coins auf seinem Konto. Kontostand: {userDonaterKontoToUpdate.Konto} Coins");
-                    await Context.Channel.SendMessageAsync($"{Context.User.Mention}, du hast nicht genug Coins, um den Betrag '{amount} :coin:' zu spenden \nSpiele ein Spiel und wieder mehr Coins auf dein Konto zu bekommen.");
+                    await Context.Channel.SendMessageAsync($"{Context.User.Mention}, du hast nicht genug Coins, um den Betrag '{amount:#,0} :coin:' zu spenden \nSpiele ein Spiel um wieder mehr Coins auf dein Konto zu bekommen.");
                 }
                 else
                 {
@@ -46,9 +48,9 @@ namespace DiscordBot.Modules
 
                     _serverDataManager.SaveServerData(Context.Guild.ToString(), serverData);
 
-                    Console.WriteLine($"Das Konto von '{userToDonateKontoToUpdate}' wurde um {amount} erhöht. Neuer Kontostand: {userToDonateKontoToUpdate.Konto} Coins");
-                    Console.WriteLine($"Das Konto von '{Context.User}' wurde um {amount} gesenkt. Neuer Kontostand: {userDonaterKontoToUpdate.Konto} Coins");
-                    await Context.Channel.SendMessageAsync($"{userToDonateID.Mention}, der User {Context.User.Mention} hat dir {amount} :coin: gespendet!");
+                    Console.WriteLine($"Das Konto von '{userToDonateKontoToUpdate}' wurde um {amount:#,0} erhöht. Neuer Kontostand: {userToDonateKontoToUpdate.Konto:#,0} Coins");
+                    Console.WriteLine($"Das Konto von '{Context.User}' wurde um {amount:#,0} gesenkt. Neuer Kontostand: {userDonaterKontoToUpdate.Konto:#,0} Coins");
+                    await Context.Channel.SendMessageAsync($"{userToDonateID.Mention}, der User {Context.User.Mention} hat dir {amount:#,0} :coin: gespendet!");
                 }
             }
             else
