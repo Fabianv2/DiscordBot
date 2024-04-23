@@ -15,7 +15,6 @@ namespace DiscordBot
     {
         BankingModule _bankingModule = new BankingModule();
         LevelModule _levelModule = new LevelModule();
-        //ApplicationCommandModule acm;
 
         private string GetPrefix() => BotManager.PREFIX;
 
