@@ -15,5 +15,6 @@ namespace DiscordBot.AccountManager
         public int Level { get; set; }
         public double EXP { get; set; }
         public string JoinedAt {  get; set; }
+        public bool IsBot { get; set; }
     }
 }

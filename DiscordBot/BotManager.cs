@@ -125,7 +125,7 @@ namespace DiscordBot
             }
         }
 
-        public async Task UpdateUser([Remainder]DiscordSocketClient botClient = null)
+        public async Task UpdateUser([Remainder] DiscordSocketClient botClient = null)
         {
             List<string> serverList = new List<string>();
             foreach (var foundServer in BotClient.Guilds)
@@ -162,42 +162,32 @@ namespace DiscordBot
                         string jsonText = File.ReadAllText(jsonServerFile);
                         ServerData serverData = JsonConvert.DeserializeObject<ServerData>(jsonText);
                         var targetServer = BotClient.Guilds.FirstOrDefault(guild => guild.Name == toUpdateServer);
-                        
+
                         foreach (var searchedUser in targetServer.Users)
                         {
                             UserData userData = serverData.Users.Find(user => user.Username == searchedUser.ToString());
 
-                            //if (!searchedUser.IsBot)
-                            //{
-                                if (userData == null)
+                            if (userData == null)
+                            {
+                                UserData newUser = new UserData
                                 {
-                                    UserData newUser = new UserData
-                                    {
-                                        Username = searchedUser.ToString(),
-                                        Konto = 10.0,
-                                        JoinedAt = searchedUser.JoinedAt.Value.LocalDateTime.ToString(),
-                                        Nickname = searchedUser.Nickname
-                                    };
-                                    serverData.Users.Add(newUser);
-                                }
-                                else if (userData.Username == null)
-                                {
-                                    userData.Username = searchedUser.ToString();
-                                }
-                                else if (userData.JoinedAt == null || userData.JoinedAt != searchedUser.JoinedAt.Value.LocalDateTime.ToString())
-                                {
-                                    userData.JoinedAt = searchedUser.JoinedAt.Value.LocalDateTime.ToString().Substring(0, 19);
-                                }
-                                else if (userData.Nickname == null)
-                                {
-                                    userData.Nickname = searchedUser.Nickname;
-                                }
-                                else if (userData.Nickname != searchedUser.Nickname)
-                                {
-                                    userData.PrevNicknames += $" | {searchedUser.Nickname}";
-                                    userData.Nickname = searchedUser.Nickname;
-                                }
-                            //}
+                                    Username = searchedUser.ToString(),
+                                    Nickname = searchedUser.Nickname,
+                                    Konto = 10.0,
+                                    JoinedAt = searchedUser.JoinedAt.Value.LocalDateTime.ToString(),
+                                    IsBot = searchedUser.IsBot
+                                };
+                                serverData.Users.Add(newUser);
+                            }
+                            else if (userData.Nickname != searchedUser.Nickname && searchedUser.Nickname != null)
+                            {
+                                userData.PrevNicknames += $"|{searchedUser.Nickname}";
+                                userData.Nickname = searchedUser.Nickname;
+                            }
+                            else if (searchedUser.Nickname == null && userData.Nickname != null)
+                            {
+                                userData.Nickname = null;
+                            }
                         }
 
                         string updatedJSON = JsonConvert.SerializeObject(serverData, Formatting.Indented);
